@@ -1,14 +1,19 @@
 {
-  "files": [],
   "compilerOptions": {
-    "types": ["node"]
+    "declaration": true,
+    "typeRoots": ["./dist/mantine-tailwind-adapter.d.ts"],
+
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "target": "ES2022",
+    "moduleResolution": "Node10",
+    "module": "CommonJS",
+    "isolatedModules": true,
+    "noEmit": true,
+    "outDir": "dist"
   },
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
+  "exclude": ["node_modules", "**/**.test.ts"],
+  "include": ["src"]
 }

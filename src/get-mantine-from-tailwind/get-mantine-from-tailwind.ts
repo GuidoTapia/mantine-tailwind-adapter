@@ -1,20 +1,20 @@
-import { type Config as TailwindConfig } from "tailwindcss"
+import { type Config as TailwindConfig } from "tailwindcss";
 import {
   MantineColorsTuple,
   MantineThemeColors,
   MantineThemeOverride,
-} from "@mantine/core"
+} from "@mantine/core";
 import {
   KeyValuePair,
   RecursiveKeyValuePair,
   ResolvableTo,
   Screen,
   ScreensConfig,
-} from "tailwindcss/types/config"
+} from "tailwindcss/types/config";
 
 function objectTailwindToMantine(
   tailwindObject?: ResolvableTo<KeyValuePair>,
-  tailwindExtendObject?: ResolvableTo<KeyValuePair>,
+  tailwindExtendObject?: ResolvableTo<KeyValuePair>
 ): Record<string, string> | undefined {
   /* Most of the cases, the only differnce between Tailwind and Mantine is that
      Tailwind uses two iterable KeyValuePair (overwrite and extend), and Mantine 
@@ -24,8 +24,8 @@ function objectTailwindToMantine(
     return {
       ...(tailwindObject ? tailwindObject : {}),
       ...(tailwindExtendObject ? tailwindExtendObject : {}),
-    }
-  return undefined
+    };
+  return undefined;
 }
 
 function getFontSizes(
@@ -34,7 +34,7 @@ function getFontSizes(
   >,
   tailwindFontSizeExtendObject?: ResolvableTo<
     KeyValuePair<string, string | [fontSize: string, rest: unknown]>
-  >,
+  >
 ): Record<string, string> | undefined {
   /* Tailwind fontSizes could be a string or an array that includes lineHeight or a config 
      obj (lineHeight, letterSpacing, fontWeight), so if the fontSize is an array we only care 
@@ -54,14 +54,14 @@ function getFontSizes(
         typeof tailwindFontSize === "string"
           ? tailwindFontSize
           : tailwindFontSize[0],
-      ]),
-    )
-  return undefined
+      ])
+    );
+  return undefined;
 }
 
 function getBreakpoints(
   tailwindScreenObject?: ResolvableTo<ScreensConfig>,
-  tailwindScreenExtendObject?: ResolvableTo<ScreensConfig>,
+  tailwindScreenExtendObject?: ResolvableTo<ScreensConfig>
 ): Record<string, string> | undefined {
   /* Tailwind breakpoints could be a string, a number (for pixels) or an object with the 
      attributtes min, max and/or raw, string and number are trivial, but deffining wich uses 
@@ -76,23 +76,23 @@ function getBreakpoints(
           : []),
       ].map(([key, breakpointValue]: [string, string | Screen | Screen[]]) => {
         if (typeof breakpointValue === "number")
-          return [key, `${breakpointValue}px`]
+          return [key, `${breakpointValue}px`];
 
-        if (typeof breakpointValue === "string") return [key, breakpointValue]
+        if (typeof breakpointValue === "string") return [key, breakpointValue];
 
-        if ("min" in breakpointValue) return [key, breakpointValue.min]
+        if ("min" in breakpointValue) return [key, breakpointValue.min];
 
-        if ("raw" in breakpointValue) return [key, breakpointValue.raw]
+        if ("raw" in breakpointValue) return [key, breakpointValue.raw];
 
-        return [key, ""]
-      }),
-    )
-  return undefined
+        return [key, ""];
+      })
+    );
+  return undefined;
 }
 
 function getColors(
   tailwindColorsObject?: ResolvableTo<RecursiveKeyValuePair>,
-  tailwindColorsExtendObject?: ResolvableTo<RecursiveKeyValuePair>,
+  tailwindColorsExtendObject?: ResolvableTo<RecursiveKeyValuePair>
 ): Partial<MantineThemeColors> | undefined {
   /* Tailwind can overwrite all colors using tailwindConfig.theme?.colors or 
      extend existing colors with tailwindConfig.theme?.extend?.colors in case 
@@ -107,7 +107,7 @@ function getColors(
           ? Object.entries(tailwindColorsExtendObject)
           : []),
       ].map(([key, colorValue]) => {
-        let colorsArray = Array.from({ length: 10 }, () => "")
+        let colorsArray = Array.from({ length: 10 }, () => "");
         /* Tailwind expects colors to be strings or objects with number keys usually been 11 values: 
            ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"]
         */
@@ -116,7 +116,7 @@ function getColors(
            we need to generate an array of size 10 with same value
         */
         if (typeof colorValue === "string") {
-          colorsArray = Array.from({ length: 10 }, () => colorValue)
+          colorsArray = Array.from({ length: 10 }, () => colorValue);
         }
 
         /* As Mantine require at least 10 shades of a color, and Tailwind support to have more or less, 
@@ -124,7 +124,7 @@ function getColors(
            array, and in this case the last value is used.
         */
         if (typeof colorValue === "object") {
-          const tailwindColorsArray = Object.values(colorValue)
+          const tailwindColorsArray = Object.values(colorValue);
 
           colorsArray =
             tailwindColorsArray.length >= 10
@@ -132,51 +132,51 @@ function getColors(
               : colorsArray.map((_, index) =>
                   index > tailwindColorsArray.length
                     ? String(tailwindColorsArray[index])
-                    : String(tailwindColorsArray.at(-1)),
-                )
+                    : String(tailwindColorsArray.at(-1))
+                );
         }
 
-        return [key, colorsArray as unknown as MantineColorsTuple]
-      }),
-    )
+        return [key, colorsArray as unknown as MantineColorsTuple];
+      })
+    );
   }
-  return undefined
+  return undefined;
 }
 
 export function getMantineTheme(
-  tailwindConfig: TailwindConfig,
+  tailwindConfig: TailwindConfig
 ): MantineThemeOverride {
   const colors = getColors(
     tailwindConfig.theme?.colors,
-    tailwindConfig.theme?.extend?.colors,
-  )
+    tailwindConfig.theme?.extend?.colors
+  );
 
   const breakpoints = getBreakpoints(
     tailwindConfig.theme?.screens,
-    tailwindConfig.theme?.extend?.screens,
-  )
+    tailwindConfig.theme?.extend?.screens
+  );
 
   const fontSizes = getFontSizes(
     tailwindConfig.theme?.fontSize,
-    tailwindConfig.theme?.extend?.fontSize,
-  )
+    tailwindConfig.theme?.extend?.fontSize
+  );
 
   const spacing = objectTailwindToMantine(
     tailwindConfig.theme?.spacing,
-    tailwindConfig.theme?.extend?.spacing,
-  )
+    tailwindConfig.theme?.extend?.spacing
+  );
   const radius = objectTailwindToMantine(
     tailwindConfig.theme?.borderRadius,
-    tailwindConfig.theme?.extend?.borderRadius,
-  )
+    tailwindConfig.theme?.extend?.borderRadius
+  );
   const shadows = objectTailwindToMantine(
     tailwindConfig.theme?.boxShadow,
-    tailwindConfig.theme?.extend?.boxShadow,
-  )
+    tailwindConfig.theme?.extend?.boxShadow
+  );
   const lineHeights = objectTailwindToMantine(
     tailwindConfig.theme?.lineHeight,
-    tailwindConfig.theme?.extend?.lineHeight,
-  )
+    tailwindConfig.theme?.extend?.lineHeight
+  );
 
   return {
     colors: colors,
@@ -196,5 +196,5 @@ export function getMantineTheme(
     defaultRadius, defaultGradient, white and black are not considered as there aren't default values
     in Tailwind
     */
-  }
+  };
 }
