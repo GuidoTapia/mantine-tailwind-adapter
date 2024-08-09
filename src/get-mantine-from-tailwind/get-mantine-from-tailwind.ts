@@ -12,7 +12,7 @@ import {
   ScreensConfig,
 } from "tailwindcss/types/config";
 
-function objectTailwindToMantine(
+export function objectTailwindToMantine(
   tailwindObject?: ResolvableTo<KeyValuePair>,
   tailwindExtendObject?: ResolvableTo<KeyValuePair>
 ): Record<string, string> | undefined {
@@ -28,7 +28,7 @@ function objectTailwindToMantine(
   return undefined;
 }
 
-function getFontSizes(
+export function getFontSizes(
   tailwindFontSizeObject?: ResolvableTo<
     KeyValuePair<string, string | [fontSize: string, rest: unknown]>
   >,
@@ -59,7 +59,7 @@ function getFontSizes(
   return undefined;
 }
 
-function getBreakpoints(
+export function getBreakpoints(
   tailwindScreenObject?: ResolvableTo<ScreensConfig>,
   tailwindScreenExtendObject?: ResolvableTo<ScreensConfig>
 ): Record<string, string> | undefined {
@@ -82,7 +82,7 @@ function getBreakpoints(
 
         if ("min" in breakpointValue) return [key, breakpointValue.min];
 
-        if ("raw" in breakpointValue) return [key, breakpointValue.raw];
+        if ("max" in breakpointValue) return [key, breakpointValue.max];
 
         return [key, ""];
       })
@@ -90,7 +90,7 @@ function getBreakpoints(
   return undefined;
 }
 
-function getColors(
+export function getColors(
   tailwindColorsObject?: ResolvableTo<RecursiveKeyValuePair>,
   tailwindColorsExtendObject?: ResolvableTo<RecursiveKeyValuePair>
 ): Partial<MantineThemeColors> | undefined {
