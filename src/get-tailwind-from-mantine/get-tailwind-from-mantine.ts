@@ -1,13 +1,13 @@
-import { type Config as TailwindConfig } from "tailwindcss"
-import { MantineThemeColors, MantineThemeOverride } from "@mantine/core"
+import { type Config as TailwindConfig } from "tailwindcss";
+import { MantineThemeColors, MantineThemeOverride } from "@mantine/core";
 import {
   KeyValuePair,
   RecursiveKeyValuePair,
   ResolvableTo,
-} from "tailwindcss/types/config"
+} from "tailwindcss/types/config";
 
-function objectMantineToTailwind(
-  mantineObject?: Record<string, string | undefined>,
+export function objectMantineToTailwind(
+  mantineObject?: Record<string, string | undefined>
 ): ResolvableTo<KeyValuePair> | undefined {
   /* Most of the cases, the only differnce between Tailwind and Mantine is that
      Tailwind uses two iterable KeyValuePair (overwrite and extend), and Mantine 
@@ -15,14 +15,14 @@ function objectMantineToTailwind(
   */
   if (mantineObject)
     return Object.fromEntries(
-      Object.entries(mantineObject).filter(([key, value]) => key && value),
-    ) as Record<string, string>
+      Object.entries(mantineObject).filter(([key, value]) => key && value)
+    ) as Record<string, string>;
 
-  return undefined
+  return undefined;
 }
 
-function getColors(
-  mantineColors?: Partial<MantineThemeColors>,
+export function getColors(
+  mantineColors?: Partial<MantineThemeColors>
 ): ResolvableTo<RecursiveKeyValuePair> | undefined {
   if (mantineColors) {
     return Object.fromEntries(
@@ -41,35 +41,41 @@ function getColors(
             "800",
             "900",
             ...(colorValue && colorValue.length > 10 ? ["950"] : []),
-          ]
+            ...(colorValue && colorValue.length > 11
+              ? Array.from(
+                  { length: colorValue.length - 11 },
+                  (_, i) => `mantine-${i + 12}`
+                )
+              : []),
+          ];
 
           return [
             key,
             Object.fromEntries(
-              shadeKeys.map((shade, i) => [shade, colorValue?.at(i)]),
+              shadeKeys.map((shade, i) => [shade, colorValue?.at(i)])
             ),
-          ]
-        }),
-    ) as ResolvableTo<RecursiveKeyValuePair>
+          ];
+        })
+    ) as ResolvableTo<RecursiveKeyValuePair>;
   }
-  return undefined
+  return undefined;
 }
 
 export function getTailwindConfig(
   mantineTheme: MantineThemeOverride,
-  overwriteValues: boolean = false,
+  overwriteValues: boolean = false
 ): TailwindConfig {
-  const colors = getColors(mantineTheme.colors)
+  const colors = getColors(mantineTheme.colors);
 
-  const fontSize = objectMantineToTailwind(mantineTheme.fontSizes)
-  const breakpoints = objectMantineToTailwind(mantineTheme.breakpoints)
-  const spacing = objectMantineToTailwind(mantineTheme.spacing)
-  const borderRadius = objectMantineToTailwind(mantineTheme.radius)
-  const shadows = objectMantineToTailwind(mantineTheme.shadows)
-  const lineHeights = objectMantineToTailwind(mantineTheme.lineHeights)
+  const fontSize = objectMantineToTailwind(mantineTheme.fontSizes);
+  const breakpoints = objectMantineToTailwind(mantineTheme.breakpoints);
+  const spacing = objectMantineToTailwind(mantineTheme.spacing);
+  const borderRadius = objectMantineToTailwind(mantineTheme.radius);
+  const shadows = objectMantineToTailwind(mantineTheme.shadows);
+  const lineHeights = objectMantineToTailwind(mantineTheme.lineHeights);
   const fontFamily = mantineTheme.fontFamily
     ? { mantine: mantineTheme.fontFamily.split(" ") }
-    : undefined
+    : undefined;
 
   return {
     content: ["./src/**/*.tsx"],
@@ -104,5 +110,5 @@ export function getTailwindConfig(
             fontFamily: fontFamily,
           },
         },
-  }
+  };
 }

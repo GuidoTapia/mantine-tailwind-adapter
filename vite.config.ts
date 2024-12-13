@@ -19,4 +19,10 @@ export default defineConfig({
       fileName: "mantine-tailwind-adapter",
     },
   },
+  test: {
+    coverage: {
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: ["**/index.ts", "src/main.ts", "src/**/*.test.{ts,tsx}"],
+    },
+  },
 });
